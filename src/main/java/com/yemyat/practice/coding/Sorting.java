@@ -52,7 +52,7 @@ class Utility {
     }
     static <K> void printArray(K[] input) {
         for (int i=0; i<input.length; i++) {
-            System.out.print(input[i] + ((i == input.length-1)? "\n": " "));
+            System.out.print(input[i] + ((i == input.length - 1) ? "\n" : " "));
         }
     }
     static <K> String concat(K[] input) {
@@ -227,7 +227,10 @@ class CountingSort<K extends Comparable<K>> extends Sort<K> {
     }
     void sort(K[] input) {
         Integer[] data = toIntegers(input);
+
+        // TODO: Implement
         Arrays.sort(data);
+
         toKs(input, data);
     }
 }
