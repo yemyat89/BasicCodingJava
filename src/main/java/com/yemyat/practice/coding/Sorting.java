@@ -3,6 +3,20 @@ package com.yemyat.practice.coding;
 import java.util.Arrays;
 import java.util.Random;
 
+class CustomItem implements Comparable {
+    Integer data;
+    CustomItem(Integer data) {
+        this.data = data;
+    }
+
+    public int compareTo(Object o) {
+        CustomItem incoming = (CustomItem) o;
+        if (this.data.intValue() < incoming.data.intValue()) return -1;
+        else if (this.data.intValue() > incoming.data.intValue()) return 1;
+        else return 0;
+    }
+}
+
 class Utility {
     static Integer[] getRandomIntegerArray(int size) {
         Random randomGen = new Random();
@@ -17,6 +31,14 @@ class Utility {
         Character[] data = new Character[size];
         for (int i=0; i<data.length; i++) {
             data[i] = (char) (randomGen.nextInt(123 - 97) + 97);
+        }
+        return data;
+    }
+    static CustomItem[] getRandomCustomItemArray(int size) {
+        Random randomGen = new Random();
+        CustomItem[] data = new CustomItem[size];
+        for (int i=0; i<data.length; i++) {
+            data[i] = new CustomItem(randomGen.nextInt(100));
         }
         return data;
     }
@@ -169,6 +191,13 @@ public class Sorting {
             Character[] originalChars = Arrays.copyOf(dataChars, dataChars.length);
             sorter.sort(dataChars);
             assert Utility.verifySorted(originalChars, dataChars);
+
+            // CustomItem type
+            CustomItem[] dataCustom = Utility.getRandomCustomItemArray(10);
+            CustomItem[] originalCustom = Arrays.copyOf(dataCustom, dataCustom.length);
+            sorter.sort(dataCustom);
+            assert Utility.verifySorted(originalCustom, dataCustom);
+
 
         }
     }
