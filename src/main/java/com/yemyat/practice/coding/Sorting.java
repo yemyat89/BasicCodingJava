@@ -171,6 +171,8 @@ class MergeSort<K extends Comparable<K>> extends Sort<K> {
 
 public class Sorting {
     public static void main(String[] args) {
+
+        int numberOfItem = 100;
         Sort[] sortStrategies = new Sort[] {
                 new SelectionSort(),
                 new InsertionSort(),
@@ -181,19 +183,19 @@ public class Sorting {
         for (Sort sorter: sortStrategies) {
 
             // Integer type
-            Integer[] dataIntegers = Utility.getRandomIntegerArray(10);
+            Integer[] dataIntegers = Utility.getRandomIntegerArray(numberOfItem);
             Integer[] originalIntegers = Arrays.copyOf(dataIntegers, dataIntegers.length);
             sorter.sort(dataIntegers);
             assert Utility.verifySorted(originalIntegers, dataIntegers);
 
             // Character type
-            Character[] dataChars = Utility.getRandomCharacterArray(10);
+            Character[] dataChars = Utility.getRandomCharacterArray(numberOfItem);
             Character[] originalChars = Arrays.copyOf(dataChars, dataChars.length);
             sorter.sort(dataChars);
             assert Utility.verifySorted(originalChars, dataChars);
 
             // CustomItem type
-            CustomItem[] dataCustom = Utility.getRandomCustomItemArray(10);
+            CustomItem[] dataCustom = Utility.getRandomCustomItemArray(numberOfItem);
             CustomItem[] originalCustom = Arrays.copyOf(dataCustom, dataCustom.length);
             sorter.sort(dataCustom);
             assert Utility.verifySorted(originalCustom, dataCustom);
