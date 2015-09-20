@@ -107,28 +107,25 @@ class QuickSort<K extends Comparable<K>> extends Sort<K> {
 }
 
 class MergeSort<K extends Comparable<K>> extends Sort<K> {
-    K[] temp = null;
     void sort(K[] input) {
         if (input.length < 1) return;
-        temp = Arrays.copyOf(input, input.length);
+        K[] temp = Arrays.copyOf(input, input.length);
         for (int i=0; i<temp.length; i++) temp[i] = null;
-        sort(input, 0, input.length-1);
+        sort(input, temp, 0, input.length-1);
     }
 
-    private void sort(K[] input, int start, int end) {
+    private void sort(K[] input, K[] temp, int start, int end) {
         if (start == end) return;
         int mid = start + ((end-start)/2);
-        sort(input, start, mid);
-        sort(input, mid+1, end);
-        twoWayMerge(input, start, mid, end);
+        sort(input, temp, start, mid);
+        sort(input, temp, mid+1, end);
+        twoWayMerge(input, temp, start, mid, end);
     }
-    private void twoWayMerge(K[] input, int start, int mid, int end) {
+    private void twoWayMerge(K[] input, K[] temp, int start, int mid, int end) {
         for (int i=start; i<=end; i++) {
             temp[i] = input[i];
         }
-
         int i=start, j=mid+1, k=start;
-
         while (i <= mid && j <= end) {
             if (temp[i].compareTo(temp[j]) <= 0) {
                 input[k] = temp[i];
@@ -139,10 +136,13 @@ class MergeSort<K extends Comparable<K>> extends Sort<K> {
             }
             k++;
         }
-
         while (i <= mid) {
             input[k] = temp[i];
             k++; i++;
+        }
+        while (j <= end) {
+            input[k] = temp[j];
+            k++; j++;
         }
     }
 }
@@ -169,7 +169,7 @@ public class Sorting {
             Character[] originalChars = Arrays.copyOf(dataChars, dataChars.length);
             sorter.sort(dataChars);
             assert Utility.verifySorted(originalChars, dataChars);
-            
+
         }
     }
 }
