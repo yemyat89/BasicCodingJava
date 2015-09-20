@@ -78,11 +78,40 @@ class InsertionSort<K extends Comparable<K>> extends Sort<K> {
     }
 }
 
+class QuickSort<K extends Comparable<K>> extends Sort<K> {
+    void sort(K[] input) {
+        sort(input, 0, input.length-1);
+    }
+    private int partition(K[] input, int start, int end) {
+        int pivot=start, left=start+1, right=end;
+        while (true) {
+            while (left < right && input[right].compareTo(input[pivot]) > 0) {
+                right--;
+            }
+            while (left < right && input[left].compareTo(input[pivot]) <= 0) {
+                left++;
+            }
+            if (left == right) break;
+            swap(input, left, right);
+        }
+        if (input[left].compareTo(input[pivot]) > 0) return pivot;
+        swap(input, left, pivot);
+        return left;
+    }
+    private void sort(K[] input, int start, int end) {
+        if (start >= end) return;
+        int pivotPoint = partition(input, start, end);
+        sort(input, start, pivotPoint-1);
+        sort(input, pivotPoint+1, end);
+    }
+}
+
 public class Sorting {
     public static void main(String[] args) {
         Sort[] sortStrategies = new Sort[] {
                 new SelectionSort(),
-                new InsertionSort()
+                new InsertionSort(),
+                new QuickSort()
         };
 
         for (Sort sorter: sortStrategies) {
