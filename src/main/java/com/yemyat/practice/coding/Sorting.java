@@ -1,8 +1,6 @@
 package com.yemyat.practice.coding;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 class Utility {
