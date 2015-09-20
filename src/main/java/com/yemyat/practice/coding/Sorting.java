@@ -8,11 +8,19 @@ class CustomItem implements Comparable {
     CustomItem(Integer data) {
         this.data = data;
     }
-
+    @Override
+    public String toString() {
+        return data.toString();
+    }
+    @Override
+    public boolean equals(Object obj) {
+        CustomItem incoming = (CustomItem) obj;
+        return data.intValue() == incoming.data.intValue();
+    }
     public int compareTo(Object o) {
         CustomItem incoming = (CustomItem) o;
-        if (this.data.intValue() < incoming.data.intValue()) return -1;
-        else if (this.data.intValue() > incoming.data.intValue()) return 1;
+        if (data.intValue() < incoming.data.intValue()) return -1;
+        else if (data.intValue() > incoming.data.intValue()) return 1;
         else return 0;
     }
 }
@@ -47,13 +55,33 @@ class Utility {
             System.out.print(input[i] + ((i == input.length-1)? "\n": " "));
         }
     }
-    static <K> boolean verifySorted(K[] original, K[] sorted) {
-        Arrays.sort(original);
-        if (original.length != sorted.length) return false;
-        for (int i=0; i<original.length; i++) {
-            if (!original[i].equals(sorted[i])) return false;
+    static <K> String concat(K[] input) {
+        int limit = 20;
+        StringBuffer sb = new StringBuffer();
+        for (int i=0; i<=limit; i++) {
+            sb.append(input[i] + ((i == input.length-1)? "\n": " "));
         }
-        return true;
+        if (input.length > limit) {
+            sb.append("...");
+        }
+        return sb.toString();
+    }
+    static <K> void verifySorted(Sort sorter, K[] original, K[] sorted) {
+        Arrays.sort(original);
+        if (original.length != sorted.length) {
+            String errorMsg = sorter.getClass() + ": failed for ["
+                    + Utility.concat(original) + "] and ["
+                    + Utility.concat(sorted) + "]";
+            throw new RuntimeException(errorMsg);
+        }
+        for (int i=0; i<original.length; i++) {
+            if (!original[i].equals(sorted[i])) {
+                String errorMsg = sorter.getClass() + ": failed for ["
+                        + Utility.concat(original) + "] and ["
+                        + Utility.concat(sorted) + "]";
+                throw new RuntimeException(errorMsg);
+            }
+        }
     }
 }
 
@@ -64,6 +92,9 @@ abstract class Sort<K  extends Comparable<K>> {
             input[i] = input[j];
             input[j] = temp;
         }
+    }
+    boolean sortable(K[] input) {
+        return true;
     }
     abstract void sort(K[] input);
 }
@@ -169,15 +200,50 @@ class MergeSort<K extends Comparable<K>> extends Sort<K> {
     }
 }
 
+class CountingSort<K extends Comparable<K>> extends Sort<K> {
+    @Override
+    boolean sortable(K[] input) {
+        for (K k: input) {
+            try {
+                Integer g = (Integer) k;
+            } catch (ClassCastException e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Integer[] toIntegers(K[] input) {
+        Integer[] result = new Integer[input.length];
+        for (int i=0; i<result.length; i++) {
+            result[i] = (Integer) input[i];
+        }
+        return result;
+    }
+    private void toKs(K[] slots, Integer[] input) {
+        for (int i=0; i<slots.length; i++) {
+            slots[i] = (K) input[i];
+        }
+    }
+    void sort(K[] input) {
+        Integer[] data = toIntegers(input);
+        Arrays.sort(data);
+        toKs(input, data);
+    }
+}
+
 public class Sorting {
     public static void main(String[] args) {
 
-        int numberOfItem = 100;
+        ClassLoader.getSystemClassLoader().setDefaultAssertionStatus(true);
+
+        int numberOfItem = 40;
         Sort[] sortStrategies = new Sort[] {
                 new SelectionSort(),
                 new InsertionSort(),
                 new QuickSort(),
-                new MergeSort()
+                new MergeSort(),
+                new CountingSort()
         };
 
         for (Sort sorter: sortStrategies) {
@@ -185,22 +251,26 @@ public class Sorting {
             // Integer type
             Integer[] dataIntegers = Utility.getRandomIntegerArray(numberOfItem);
             Integer[] originalIntegers = Arrays.copyOf(dataIntegers, dataIntegers.length);
-            sorter.sort(dataIntegers);
-            assert Utility.verifySorted(originalIntegers, dataIntegers);
+            if (sorter.sortable(dataIntegers)) {
+                sorter.sort(dataIntegers);
+                Utility.verifySorted(sorter, originalIntegers, dataIntegers);
+            }
 
             // Character type
             Character[] dataChars = Utility.getRandomCharacterArray(numberOfItem);
             Character[] originalChars = Arrays.copyOf(dataChars, dataChars.length);
-            sorter.sort(dataChars);
-            assert Utility.verifySorted(originalChars, dataChars);
+            if (sorter.sortable(dataChars)) {
+                sorter.sort(dataChars);
+                Utility.verifySorted(sorter, originalChars, dataChars);
+            }
 
             // CustomItem type
             CustomItem[] dataCustom = Utility.getRandomCustomItemArray(numberOfItem);
             CustomItem[] originalCustom = Arrays.copyOf(dataCustom, dataCustom.length);
-            sorter.sort(dataCustom);
-            assert Utility.verifySorted(originalCustom, dataCustom);
-
-
+            if (sorter.sortable(dataCustom)) {
+                sorter.sort(dataCustom);
+                Utility.verifySorted(sorter, originalCustom, dataCustom);
+            }
         }
     }
 }
